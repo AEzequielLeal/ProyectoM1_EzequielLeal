@@ -178,6 +178,16 @@ La carpeta `Documentacion` contiene material complementario del proyecto, incluy
 * registro del uso de Inteligencia Artificial;
 * prompts utilizados durante el proceso.
 
+## Posibles mejoras futuras
+
+Como mejoras futuras del proyecto se podrían incorporar:
+
+- Bloqueo individual de colores para conservar algunos tonos al generar una nueva paleta.
+- Opción para eliminar paletas guardadas.
+- Posibilidad de exportar una paleta.
+- Mejora de la accesibilidad para la navegación con teclado.
+- Incorporación de otros formatos de color, como RGBA.
+
 ## Autor
 
 **Ezequiel Leal**
