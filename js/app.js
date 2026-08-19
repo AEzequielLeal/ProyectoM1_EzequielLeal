@@ -1,14 +1,28 @@
+/* ========================================
+   ELEMENTOS DEL DOM
+======================================== */
+
 const btnGenerar = document.getElementById("btn-generate");
 const contenedorPaleta = document.getElementById("palette-container");
 const botonesTamanio = document.querySelectorAll(".size-btn");
 const formatoActivo = document.getElementById("active-format");
 const toast = document.getElementById("toast-notification");
+
 const btnGuardar = document.getElementById("btn-save");
 const barraGuardar = document.getElementById("save-bar");
+
 const seccionGuardadas = document.getElementById("saved-section");
 const contenedorGuardadas = document.getElementById("saved-container");
 
+const mensajeUso = document.getElementById("usage-hint");
+
+
+/* ========================================
+   VARIABLES
+======================================== */
+
 let tamanioSeleccionado = 6;
+
 let paletaActual = [];
 
 
@@ -17,17 +31,27 @@ let paletaActual = [];
 ======================================== */
 
 botonesTamanio.forEach(function(boton) {
+
     boton.addEventListener("click", function() {
 
         tamanioSeleccionado = Number(boton.dataset.size);
 
         botonesTamanio.forEach(function(botonActual) {
+
             botonActual.classList.remove("active");
-            botonActual.setAttribute("aria-pressed", "false");
+
+            botonActual.setAttribute(
+                "aria-pressed",
+                "false"
+            );
         });
 
         boton.classList.add("active");
-        boton.setAttribute("aria-pressed", "true");
+
+        boton.setAttribute(
+            "aria-pressed",
+            "true"
+        );
     });
 });
 
@@ -37,11 +61,13 @@ botonesTamanio.forEach(function(boton) {
 ======================================== */
 
 function generarColorHex() {
+
     const caracteres = "0123456789ABCDEF";
 
     let color = "#";
 
     for (let i = 0; i < 6; i++) {
+
         const indiceAleatorio = Math.floor(
             Math.random() * caracteres.length
         );
@@ -54,19 +80,57 @@ function generarColorHex() {
 
 
 /* ========================================
-   GENERAR COLOR HSL
+   CONVERTIR HEX A HSL
 ======================================== */
 
-function generarColorHsl() {
-    const tono = Math.floor(Math.random() * 360);
+function convertirHexAHsl(hex) {
 
-    const saturacion =
-        Math.floor(Math.random() * 51) + 50;
+    let r = parseInt(hex.substring(1, 3), 16) / 255;
+    let g = parseInt(hex.substring(3, 5), 16) / 255;
+    let b = parseInt(hex.substring(5, 7), 16) / 255;
 
-    const luminosidad =
-        Math.floor(Math.random() * 31) + 35;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
 
-    return `hsl(${tono}, ${saturacion}%, ${luminosidad}%)`;
+    let h = 0;
+    let s = 0;
+    let l = (max + min) / 2;
+
+    const diferencia = max - min;
+
+    if (diferencia !== 0) {
+
+        if (l > 0.5) {
+            s = diferencia / (2 - max - min);
+        } else {
+            s = diferencia / (max + min);
+        }
+
+        if (max === r) {
+
+            h =
+                (g - b) / diferencia +
+                (g < b ? 6 : 0);
+
+        } else if (max === g) {
+
+            h =
+                (b - r) / diferencia + 2;
+
+        } else {
+
+            h =
+                (r - g) / diferencia + 4;
+        }
+
+        h = h / 6;
+    }
+
+    h = Math.round(h * 360);
+    s = Math.round(s * 100);
+    l = Math.round(l * 100);
+
+    return `hsl(${h}, ${s}%, ${l}%)`;
 }
 
 
@@ -75,35 +139,51 @@ function generarColorHsl() {
 ======================================== */
 
 function generarPaleta() {
+
     const colores = [];
 
-    const formatoSeleccionado = document.querySelector(
-        'input[name="format"]:checked'
-    ).value;
+    const formatoSeleccionado =
+        document.querySelector(
+            'input[name="format"]:checked'
+        ).value;
 
     formatoActivo.textContent =
-        "Formato actual: " + formatoSeleccionado.toUpperCase();
+        "Formato actual: " +
+        formatoSeleccionado.toUpperCase();
 
-    for (let i = 0; i < tamanioSeleccionado; i++) {
+    for (
+        let i = 0;
+        i < tamanioSeleccionado;
+        i++
+    ) {
 
-        let nuevoColor;
+        const nuevoHex = generarColorHex();
 
-        if (formatoSeleccionado === "hex") {
-            nuevoColor = generarColorHex();
-        } else {
-            nuevoColor = generarColorHsl();
-        }
+        const nuevoHsl =
+            convertirHexAHsl(nuevoHex);
+
+        const nuevoColor = {
+            hex: nuevoHex,
+            hsl: nuevoHsl
+        };
 
         colores.push(nuevoColor);
     }
 
     paletaActual = colores;
 
-    mostrarPaleta(colores);
+    mostrarPaleta(
+        colores,
+        formatoSeleccionado
+    );
 
     barraGuardar.classList.remove("hidden");
 
-    mostrarToast("Paleta generada correctamente");
+    mensajeUso.classList.remove("hidden");
+
+    mostrarToast(
+        "Paleta generada correctamente"
+    );
 }
 
 
@@ -111,52 +191,146 @@ function generarPaleta() {
    MOSTRAR PALETA EN EL HTML
 ======================================== */
 
-function mostrarPaleta(colores) {
+function mostrarPaleta(
+    colores,
+    formatoSeleccionado
+) {
+
     contenedorPaleta.innerHTML = "";
 
     colores.forEach(function(color) {
 
-        const tarjeta = document.createElement("div");
+        /* TARJETA */
+
+        const tarjeta =
+            document.createElement("div");
+
         tarjeta.classList.add("color-card");
 
-        const vistaColor = document.createElement("div");
-        vistaColor.classList.add("color-preview");
-        vistaColor.style.backgroundColor = color;
 
-        const infoColor = document.createElement("div");
-        infoColor.classList.add("color-info");
+        /* VISTA DEL COLOR */
 
-        const codigoColor = document.createElement("p");
-        codigoColor.classList.add("color-code");
-        codigoColor.textContent = color;
+        const vistaColor =
+            document.createElement("div");
 
-        codigoColor.addEventListener("click", function() {
-            navigator.clipboard.writeText(color);
+        vistaColor.classList.add(
+            "color-preview"
+        );
 
-            mostrarToast("Color copiado: " + color);
-        });
+        vistaColor.style.backgroundColor =
+            color.hex;
 
-        infoColor.appendChild(codigoColor);
 
-        tarjeta.appendChild(vistaColor);
-        tarjeta.appendChild(infoColor);
+        /* INFORMACIÓN */
 
-        contenedorPaleta.appendChild(tarjeta);
+        const infoColor =
+            document.createElement("div");
+
+        infoColor.classList.add(
+            "color-info"
+        );
+
+
+        /* CÓDIGO HEX */
+
+        const codigoHex =
+            document.createElement("p");
+
+        codigoHex.classList.add(
+            "color-code"
+        );
+
+        codigoHex.textContent =
+            color.hex;
+
+
+        /* COPIAR HEX */
+
+        codigoHex.addEventListener(
+            "click",
+            function() {
+
+                navigator.clipboard
+                    .writeText(color.hex)
+
+                    .then(function() {
+
+                        mostrarToast(
+                            "Color copiado: " +
+                            color.hex
+                        );
+                    })
+
+                    .catch(function() {
+
+                        mostrarToast(
+                            "No se pudo copiar el color"
+                        );
+                    });
+            }
+        );
+
+
+        /* AGREGAR HEX */
+
+        infoColor.appendChild(
+            codigoHex
+        );
+
+
+        /* SI ELIGIÓ HSL, MOSTRAMOS TAMBIÉN HSL */
+
+        if (
+            formatoSeleccionado === "hsl"
+        ) {
+
+            const codigoHsl =
+                document.createElement("p");
+
+            codigoHsl.classList.add(
+                "color-hsl"
+            );
+
+            codigoHsl.textContent =
+                color.hsl;
+
+            infoColor.appendChild(
+                codigoHsl
+            );
+        }
+
+
+        /* ARMAMOS LA TARJETA */
+
+        tarjeta.appendChild(
+            vistaColor
+        );
+
+        tarjeta.appendChild(
+            infoColor
+        );
+
+        contenedorPaleta.appendChild(
+            tarjeta
+        );
     });
 }
 
 
 /* ========================================
-   FUNCIÓN DEL TOAST
+   TOAST
 ======================================== */
 
 function mostrarToast(mensaje) {
+
     toast.textContent = mensaje;
 
     toast.classList.add("show");
 
     setTimeout(function() {
+
         toast.classList.remove("show");
+
     }, 2000);
 }
 
@@ -166,38 +340,94 @@ function mostrarToast(mensaje) {
 ======================================== */
 
 function mostrarPaletasGuardadas() {
+
     const paletasGuardadas =
-        JSON.parse(localStorage.getItem("paletas")) || [];
+        JSON.parse(
+            localStorage.getItem("paletas")
+        ) || [];
 
     contenedorGuardadas.innerHTML = "";
 
-    if (paletasGuardadas.length === 0) {
-        seccionGuardadas.classList.add("hidden");
+    if (
+        paletasGuardadas.length === 0
+    ) {
+
+        seccionGuardadas.classList.add(
+            "hidden"
+        );
+
         return;
     }
 
-    seccionGuardadas.classList.remove("hidden");
+    seccionGuardadas.classList.remove(
+        "hidden"
+    );
 
-    paletasGuardadas.forEach(function(paleta) {
+    paletasGuardadas.forEach(
+        function(paleta) {
 
-        const paletaGuardada = document.createElement("div");
-        paletaGuardada.classList.add("saved-palette");
+            const paletaGuardada =
+                document.createElement(
+                    "div"
+                );
 
-        paleta.forEach(function(color) {
+            paletaGuardada.classList.add(
+                "saved-palette"
+            );
 
-            const bloqueColor = document.createElement("div");
+            paleta.forEach(
+                function(color) {
 
-            bloqueColor.classList.add("saved-color");
+                    const bloqueColor =
+                        document.createElement(
+                            "div"
+                        );
 
-            bloqueColor.style.backgroundColor = color;
+                    bloqueColor.classList.add(
+                        "saved-color"
+                    );
 
-            bloqueColor.title = color;
 
-            paletaGuardada.appendChild(bloqueColor);
-        });
+                    /*
+                    Compatibilidad con paletas
+                    guardadas anteriormente
+                    */
 
-        contenedorGuardadas.appendChild(paletaGuardada);
-    });
+                    if (
+                        typeof color ===
+                        "string"
+                    ) {
+
+                        bloqueColor.style
+                            .backgroundColor =
+                            color;
+
+                        bloqueColor.title =
+                            color;
+
+                    } else {
+
+                        bloqueColor.style
+                            .backgroundColor =
+                            color.hex;
+
+                        bloqueColor.title =
+                            color.hex;
+                    }
+
+                    paletaGuardada
+                        .appendChild(
+                            bloqueColor
+                        );
+                }
+            );
+
+            contenedorGuardadas
+                .appendChild(
+                    paletaGuardada
+                );
+        }
+    );
 }
 
 
@@ -205,35 +435,63 @@ function mostrarPaletasGuardadas() {
    BOTÓN GENERAR
 ======================================== */
 
-btnGenerar.addEventListener("click", function() {
-    generarPaleta();
-});
+btnGenerar.addEventListener(
+    "click",
+    function() {
+
+        generarPaleta();
+    }
+);
 
 
 /* ========================================
    BOTÓN GUARDAR PALETA
 ======================================== */
 
-btnGuardar.addEventListener("click", function() {
+btnGuardar.addEventListener(
+    "click",
+    function() {
 
-    const paletasGuardadas =
-        JSON.parse(localStorage.getItem("paletas")) || [];
+        if (
+            paletaActual.length === 0
+        ) {
 
-    paletasGuardadas.push(paletaActual);
+            mostrarToast(
+                "Primero generá una paleta"
+            );
 
-    localStorage.setItem(
-        "paletas",
-        JSON.stringify(paletasGuardadas)
-    );
+            return;
+        }
 
-    mostrarPaletasGuardadas();
+        const paletasGuardadas =
+            JSON.parse(
+                localStorage.getItem(
+                    "paletas"
+                )
+            ) || [];
 
-    mostrarToast("Paleta guardada correctamente");
-});
+        paletasGuardadas.push(
+            paletaActual
+        );
+
+        localStorage.setItem(
+            "paletas",
+            JSON.stringify(
+                paletasGuardadas
+            )
+        );
+
+        mostrarPaletasGuardadas();
+
+        mostrarToast(
+            "Paleta guardada correctamente"
+        );
+    }
+);
 
 
 /* ========================================
-   MOSTRAR PALetas AL CARGAR LA PÁGINA
+   CARGAR PALETAS GUARDADAS
 ======================================== */
 
 mostrarPaletasGuardadas();
