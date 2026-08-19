@@ -3,9 +3,13 @@ const contenedorPaleta = document.getElementById("palette-container");
 const botonesTamanio = document.querySelectorAll(".size-btn");
 const formatoActivo = document.getElementById("active-format");
 const toast = document.getElementById("toast-notification");
+const btnGuardar = document.getElementById("btn-save");
+const barraGuardar = document.getElementById("save-bar");
+const seccionGuardadas = document.getElementById("saved-section");
+const contenedorGuardadas = document.getElementById("saved-container");
 
 let tamanioSeleccionado = 6;
-
+let paletaActual = [];
 
 /* ========================================
    SELECCIÓN DEL TAMAÑO
@@ -92,7 +96,11 @@ function generarPaleta() {
         colores.push(nuevoColor);
     }
 
+    paletaActual = colores;
+
     mostrarPaleta(colores);
+
+    barraGuardar.classList.remove("hidden");
 
     mostrarToast("Paleta generada correctamente");
 }
