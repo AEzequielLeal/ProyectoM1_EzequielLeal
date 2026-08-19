@@ -11,6 +11,7 @@ const contenedorGuardadas = document.getElementById("saved-container");
 let tamanioSeleccionado = 6;
 let paletaActual = [];
 
+
 /* ========================================
    SELECCIÓN DEL TAMAÑO
 ======================================== */
@@ -111,7 +112,6 @@ function generarPaleta() {
 ======================================== */
 
 function mostrarPaleta(colores) {
-
     contenedorPaleta.innerHTML = "";
 
     colores.forEach(function(color) {
@@ -121,7 +121,6 @@ function mostrarPaleta(colores) {
 
         const vistaColor = document.createElement("div");
         vistaColor.classList.add("color-preview");
-
         vistaColor.style.backgroundColor = color;
 
         const infoColor = document.createElement("div");
@@ -129,12 +128,9 @@ function mostrarPaleta(colores) {
 
         const codigoColor = document.createElement("p");
         codigoColor.classList.add("color-code");
-
         codigoColor.textContent = color;
 
-        /* COPIAR COLOR AL PORTAPAPELES */
         codigoColor.addEventListener("click", function() {
-
             navigator.clipboard.writeText(color);
 
             mostrarToast("Color copiado: " + color);
@@ -166,9 +162,78 @@ function mostrarToast(mensaje) {
 
 
 /* ========================================
+   MOSTRAR PALETAS GUARDADAS
+======================================== */
+
+function mostrarPaletasGuardadas() {
+    const paletasGuardadas =
+        JSON.parse(localStorage.getItem("paletas")) || [];
+
+    contenedorGuardadas.innerHTML = "";
+
+    if (paletasGuardadas.length === 0) {
+        seccionGuardadas.classList.add("hidden");
+        return;
+    }
+
+    seccionGuardadas.classList.remove("hidden");
+
+    paletasGuardadas.forEach(function(paleta) {
+
+        const paletaGuardada = document.createElement("div");
+        paletaGuardada.classList.add("saved-palette");
+
+        paleta.forEach(function(color) {
+
+            const bloqueColor = document.createElement("div");
+
+            bloqueColor.classList.add("saved-color");
+
+            bloqueColor.style.backgroundColor = color;
+
+            bloqueColor.title = color;
+
+            paletaGuardada.appendChild(bloqueColor);
+        });
+
+        contenedorGuardadas.appendChild(paletaGuardada);
+    });
+}
+
+
+/* ========================================
    BOTÓN GENERAR
 ======================================== */
 
 btnGenerar.addEventListener("click", function() {
     generarPaleta();
 });
+
+
+/* ========================================
+   BOTÓN GUARDAR PALETA
+======================================== */
+
+btnGuardar.addEventListener("click", function() {
+
+    const paletasGuardadas =
+        JSON.parse(localStorage.getItem("paletas")) || [];
+
+    paletasGuardadas.push(paletaActual);
+
+    localStorage.setItem(
+        "paletas",
+        JSON.stringify(paletasGuardadas)
+    );
+
+    mostrarPaletasGuardadas();
+
+    mostrarToast("Paleta guardada correctamente");
+});
+
+
+/* ========================================
+   MOSTRAR PALetas AL CARGAR LA PÁGINA
+======================================== */
+
+mostrarPaletasGuardadas();

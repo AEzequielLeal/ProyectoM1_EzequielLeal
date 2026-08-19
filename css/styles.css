@@ -93,9 +93,6 @@ a {
     display: none;
 }
 
-/* Oculta visualmente un elemento,
-   pero sigue disponible para lectores de pantalla */
-
 .sr-only {
     position: absolute;
 
@@ -474,8 +471,9 @@ a {
 }
 
 
-/* Estas tarjetas las crearemos después
-   desde JavaScript */
+/* ========================================
+   TARJETAS DE COLOR
+======================================== */
 
 .color-card {
     min-height: 150px;
@@ -556,6 +554,43 @@ a {
     grid-template-columns: repeat(2, 1fr);
 
     gap: 20px;
+}
+
+
+/* Cada paleta guardada */
+
+.saved-palette {
+    min-height: 90px;
+
+    display: flex;
+
+    overflow: hidden;
+
+    background-color: var(--surface);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-medium);
+
+    box-shadow: 0 8px 20px rgb(0 0 0 / 18%);
+
+    transition:
+        transform var(--transition),
+        box-shadow var(--transition);
+}
+
+.saved-palette:hover {
+    transform: translateY(-3px);
+
+    box-shadow: 0 12px 28px rgb(0 0 0 / 25%);
+}
+
+
+/* Cada color dentro de una paleta guardada */
+
+.saved-color {
+    min-height: 90px;
+
+    flex: 1;
 }
 
 
@@ -733,6 +768,10 @@ label:has(input:focus-visible) {
     }
 
     .palette-container {
+        grid-template-columns: 1fr;
+    }
+
+    .saved-container {
         grid-template-columns: 1fr;
     }
 
