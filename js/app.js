@@ -2,6 +2,7 @@ const btnGenerar = document.getElementById("btn-generate");
 const contenedorPaleta = document.getElementById("palette-container");
 const botonesTamanio = document.querySelectorAll(".size-btn");
 const formatoActivo = document.getElementById("active-format");
+const toast = document.getElementById("toast-notification");
 
 let tamanioSeleccionado = 6;
 
@@ -92,6 +93,8 @@ function generarPaleta() {
     }
 
     mostrarPaleta(colores);
+
+    mostrarToast("Paleta generada correctamente");
 }
 
 
@@ -128,6 +131,21 @@ function mostrarPaleta(colores) {
 
         contenedorPaleta.appendChild(tarjeta);
     });
+}
+
+
+/* ========================================
+   FUNCIÓN DEL TOAST
+======================================== */
+
+function mostrarToast(mensaje) {
+    toast.textContent = mensaje;
+
+    toast.classList.add("show");
+
+    setTimeout(function() {
+        toast.classList.remove("show");
+    }, 2000);
 }
 
 
