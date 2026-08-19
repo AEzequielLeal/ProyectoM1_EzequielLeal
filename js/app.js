@@ -124,6 +124,14 @@ function mostrarPaleta(colores) {
 
         codigoColor.textContent = color;
 
+        /* COPIAR COLOR AL PORTAPAPELES */
+        codigoColor.addEventListener("click", function() {
+
+            navigator.clipboard.writeText(color);
+
+            mostrarToast("Color copiado: " + color);
+        });
+
         infoColor.appendChild(codigoColor);
 
         tarjeta.appendChild(vistaColor);
