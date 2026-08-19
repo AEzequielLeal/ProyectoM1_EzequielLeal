@@ -478,7 +478,7 @@ a {
    desde JavaScript */
 
 .color-card {
-    min-height: 180px;
+    min-height: 150px;
 
     display: flex;
     flex-direction: column;
@@ -505,7 +505,7 @@ a {
 }
 
 .color-preview {
-    min-height: 130px;
+    min-height: 100px;
 
     flex: 1;
 }
