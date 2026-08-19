@@ -1,7 +1,7 @@
 const btnGenerar = document.getElementById("btn-generate");
 const contenedorPaleta = document.getElementById("palette-container");
 const botonesTamanio = document.querySelectorAll(".size-btn");
-
+const formatoActivo = document.getElementById("active-format");
 
 let tamanioSeleccionado = 6;
 
