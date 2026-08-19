@@ -142,9 +142,12 @@ También puede utilizarse una extensión como Live Server desde Visual Studio Co
 
 ## Despliegue
 
-La aplicación será publicada utilizando GitHub Pages.
+La aplicación está publicada mediante GitHub Pages.
 
-Una vez finalizado el despliegue, el enlace público será agregado en esta sección.
+### Demo
+
+https://aezequielleal.github.io/ProyectoM1_EzequielLeal/
+
 
 ## Uso de Inteligencia Artificial
 
